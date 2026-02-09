@@ -17,13 +17,38 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(noBtn);
         }
 
-        // Calculate visible area constraints
-        const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-        const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+        // Get card dimensions
+        const cardRect = glassCard.getBoundingClientRect();
+        const btnWidth = noBtn.offsetWidth;
+        const btnHeight = noBtn.offsetHeight;
+
+        let newX, newY;
+        let overlap = true;
+        let attempts = 0;
+
+        // Try to find a non-overlapping position
+        while (overlap && attempts < 50) {
+            newX = Math.random() * (window.innerWidth - btnWidth);
+            newY = Math.random() * (window.innerHeight - btnHeight);
+
+            // Check if this position overlaps with the card
+            // We add a small buffer (20px) to make sure it doesn't touch the edges either
+            if (
+                newX + btnWidth + 20 > cardRect.left &&
+                newX - 20 < cardRect.right &&
+                newY + btnHeight + 20 > cardRect.top &&
+                newY - 20 < cardRect.bottom
+            ) {
+                overlap = true;
+            } else {
+                overlap = false;
+            }
+            attempts++;
+        }
 
         noBtn.style.position = 'fixed';
-        noBtn.style.left = `${x}px`;
-        noBtn.style.top = `${y}px`;
+        noBtn.style.left = `${newX}px`;
+        noBtn.style.top = `${newY}px`;
 
         // Add dynamic rotation for fun
         const rotation = (Math.random() * 30) - 15;
